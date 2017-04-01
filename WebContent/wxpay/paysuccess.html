@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>优加油</title>
+    <meta name="viewport"
+          content=" width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" type="text/css" href="../css/weui.css">
+    <style type="text/css">
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            background-color: #ebebeb;
+            font-family: "PingFang SC", "微软雅黑";
+        }
+
+        .container {
+            width: 90%;
+            height: 100%;
+            margin: auto;
+            margin-top: 20px;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .msg {
+            color: rgb(4, 190, 1);
+            font-size: 22px;
+            text-align: center;
+            margin-top: 25px;
+            margin-bottom: 25px;
+            font-weight: bold;
+
+        }
+
+        .imgs {
+            width: 100%;
+            height: 415px;
+            overflow: hidden;
+            /*background:url(img/gas.jpg) repeat;*/
+            position: relative;
+        }
+
+        label {
+            display: block;
+            color: #fff;
+            background-color: rgb(4, 190, 1);
+            margin: 31px 33px 148px 30px;
+            font-size: 16px;
+            text-align: center;
+            height: 36px;
+            border-radius: 5px;
+            line-height: 36px;
+        }
+    </style>
+
+</head>
+<!--<script>-->
+    <!--function getQueryString(name) {-->
+        <!--var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");-->
+        <!--var r = window.location.search.substr(1).match(reg);-->
+        <!--if (r != null) return decodeURI(r[2]);-->
+        <!--return null;-->
+    <!--}-->
+    <!--var out_trade_no = getQueryString("out_trade_no")-->
+    <!--alert(out_trade_no)-->
+    <!--var js_notify = "/Weixin/wxpay/js_notify.do"-->
+    <!--$.get(js_notify, {out_trade_no: out_trade_no})-->
+<!--</script>-->
+<body>
+<div class="container">
+    <div class="msg"><span>支付成功，点击完成返回</span></div>
+    <div class="imgs">
+        <img src="../image/success.png" style="width:100%; height:92%;">
+    </div>
+    <a href="javascript:;" class="weui_btn weui_btn_primary" onclick="WeixinJSBridge.call('closeWindow');">完成</a>
+    <!--<input type="button" class="finish" onclick="WeixinJSBridge.call('closeWindow');" value ="完成">-->
+</div>
+<!--<label>完成<input type="button" class="finish" style="display:none" onclick="WeixinJSBridge.call('closeWindow');"></label>-->
+
+</body>
+</html>

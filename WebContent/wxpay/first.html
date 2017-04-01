@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>快捷支付</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no"/>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="../jquery-2.2.1.min.js"></script>
+    <script type="text/javascript" src="../jquery.cookie.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/weui.css">
+    <script type="text/javascript"
+            src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+</head>
+<script>
+    //清除cookie
+    $.removeCookie("selected")
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]);
+        return null;
+    }
+</script>
+<script>
+
+    var code = getQueryString("code")
+    var state = getQueryString("state")
+    var openid = $.cookie("openid")
+    if (openid == undefined || openid == "" || openid == "NA") {
+        if (code != "null") {
+            var url = "/Weixin/userinfo/getopenid.do";
+            $.getJSON(url, {"code": code, "state": state}, function (data) {
+                openid = data.openid;
+            });
+        }
+    }
+
+</script>
+<style type="text/css">
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    body {
+        background-color: #ebebeb;
+        font-family: "苹方";
+        height: 600px;
+        overflow: hidden;
+    }
+
+    html {
+    }
+
+    .pic {
+        width: 100%;
+    }
+
+    .pic img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .station_select {
+        background-color: #fff;
+        height: 50px;
+        margin-bottom: 6px;
+        position: relative;
+        margin-top: -6px;
+    }
+
+    .arrow {
+        display: inline-block;
+        float: right;
+        margin-top: 20px;
+        margin-right: 10px;
+        border: #c9c9c9 solid 2px;
+        border-left: 0;
+        border-bottom: 0;
+        width: 7px;
+        height: 7px;
+        -webkit-transform: rotate(135deg);
+        -moz-transform: rotate(135deg);
+        transform: rotate(135deg);
+    }
+
+    .station_select span {
+        font-size: 16px;
+        color: #222;
+        line-height: 50px;
+        margin-left: 10px;
+        font-weight: bold;
+    }
+
+    .mini_pic {
+        margin-left: 10px;
+        height: 15px;
+        width: 13px;
+        float: left;
+        margin-top: 15px;
+    }
+
+    .mini_pic1 {
+        margin-left: 10px;
+        height: 23px;
+        width: 22px;
+        float: left;
+    }
+
+    .mini_pic2 {
+        height: 15px;
+        width: 13px;
+        float: left;
+        margin-left: -5px;
+    }
+
+    .msg_input {
+        width: 100%;
+        height: 375px;
+        background-color: #fff;
+        overflow: hidden;
+    }
+
+    .msg {
+        border-bottom: 1px solid #ebebeb;
+        height: 43px;
+    }
+
+    .msg input {
+        border: 0px;
+        height: 43px;
+        font-size: 15px;
+        margin-left: 15px;
+        font-weight: 500;
+        width: 50%;
+    }
+
+    #ticket_title {
+        font-size: 15px;
+        font-weight: 500;
+        margin-left: 15px;
+    }
+
+    .msg #send {
+        -webkit-appearance: none;
+        border-style: none;
+        outline: none;
+        width: 20%;
+        float: right;
+        margin-right: 20px;
+        color: #fff;
+        background-color: rgb(4, 190, 1);
+        float: right;
+        font-size: 14px;
+        width: 30%;
+        height: 32px;
+        line-height: 32px;
+        border-radius: 5px;
+        margin: 5px 8px;
+    }
+
+    label {
+        display: block;
+        color: #fff;
+        background-color: rgb(4, 190, 1);
+        font-size: 16px;
+        text-align: center;
+        height: 40px;
+        border-radius: 5px;
+        line-height: 36px;
+        margin: 40px 20px;
+    }
+
+    .station_list {
+        position: absolute;
+        width: 85%;
+        background-color: #ddd;
+        top: 37px;
+        left: 40px;
+    }
+
+    #list {
+        list-style: none;
+    }
+
+    #list li {
+        font-size: 15px;
+        font-weight: bold;
+        height: 28px;
+        line-height: 28px;
+    }
+
+    .msg .ticket {
+        color: black;
+        background-color: white;
+    }
+
+    #ticket_div {
+        margin-top: -1px;
+    }
+
+    .locate {
+        display: inline-block;
+        float: right;
+        margin-top: 20px;
+        margin-right: 10px;
+    }
+
+    .tip {
+        text-align: center;
+        margin-top: -22px;
+        color: #1E90FF;
+    }
+</style>
+</head>
+<div class="pic">
+    <img src="../image/station.png">
+</div>
+
+<div class="station_select">
+    <img class="mini_pic1" src="../image/home_content_Icon_Gas@2x.png" style="margin-top: 12px;">
+    <span id="station_show"></span>
+    <span class="arrow"></span>
+    <div class="station_list">
+        <ul id="list">
+
+        </ul>
+    </div>
+</div>
+
+<div class="msg_input">
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_call@2.png">
+        <input type="tel" placeholder="请输入手机号" id="telNum">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_input@2x.png">
+        <input type="tel" placeholder="请输入验证码" id="codeIn">
+        <input type="button" id="send" style="" value="获取验证码">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_pic@2x.png">
+        <input type="text" class="license" placeholder="车牌号">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_money@2x.png">
+        <input type="number" class="amount" placeholder="金额">
+    </div>
+    <div class="weui_cells weui_cells_form" id="ticket_div">
+        <div class="weui_cell weui_cell_switch">
+            <img class="mini_pic2" src="../image/home_content_Icon_voucher@2.png">
+            <div class="weui_cell_hd weui_cell_primary" id="ticket_title">发票</div>
+            <div class="weui_cell_ft">
+                <input class="weui_switch js_switcher" id="selected" type="checkbox">
+            </div>
+        </div>
+    </div>
+
+    <label for="btn">继续</label>
+    <input type="button" id="btn" style="display:none;">
+    <div class="tip">
+        <p>温馨提示:请在车内或收银台使用</p>
+    </div>
+</div>
+
+<div id="loadingToast" class="weui_loading_toast" style="display: none">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">数据加载中</p>
+    </div>
+</div>
+
+<div id="locate_loading" class="weui_loading_toast" style="display: none">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">定位中</p>
+    </div>
+</div>
+
+<div id="alert_info" class="weui_dialog_alert" style="display: none">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">温馨提示</strong></div>
+        <div class="weui_dialog_bd">弹窗内容，告知当前页面信息等</div>
+        <div class="weui_dialog_ft">
+            <a href="javascript:;" onclick="$('#alert_info').css('display', 'none')"
+               class="weui_btn_dialog primary">确定</a>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+    function myAlert(info) {
+        $(".weui_dialog_bd").html(info)
+        $("#alert_info").css("display", "")
+    }
+</script>
+<script>
+
+    var user_info = $.cookie("user_info")
+    var station_id
+    var station_name
+    var tel
+    var license
+    if (user_info != undefined) {
+        var json = JSON.parse(user_info)
+
+        //加油站不进行缓存
+//        station_id = json.station_id
+//        station_name = json.station_name
+
+        tel = json.tel
+        license = json.license
+        $("#station_show").html(station_name)
+        $("#telNum").val(tel)
+        $(".license").val(license)
+    }
+
+    var lng;
+    var lat;
+
+
+    function fetch_station_list() {
+        $.ajax({
+            type: "GET",
+            url: "/Weixin/util/station.do",
+            data: {lng: lng, lat: lat, openid: openid},
+            dataType: "json",
+            success: function (data) {
+
+                if (data.code == "2" || data.code == '1') {
+                    $("#loadingToast").css("display", "none")
+
+                    $("#station_show").html(data.list[0].station_name);
+                    station_id = data.list[0].station_id;
+                    $(".station_list").css("display", '');
+                    $("#list").children("li").remove();
+
+                    var station_list = data.list;
+
+                    var length = station_list.length > 6 ? 6 : station_list.length;
+
+                    for (var i = 1; i < length; i++) {
+                        $("#list").append("<li>" + station_list[i].station_name + "</li>");
+                    }
+
+                    $("li").click(function (e) {
+                        console.log($(e.target).html());
+                        $("#station_show").html($(e.target).html());
+                        e.stopPropagation();
+                        for (var i = 0; i < length; i++) {
+                            if ($(e.target).html() == station_list[i].station_name) {
+                                station_id = station_list[i].station_id;
+                                console.log(station_id);
+                                function shut() {
+                                    $(".station_list").css("display", 'none');
+                                }
+
+                                setTimeout(shut, 100);
+                            }
+                        }
+
+                    });
+                    $("#station_show").click(function (e) {
+                        $(".station_list").css("display", 'none');
+                        e.stopPropagation();
+                    });
+                } else {
+                    $("#loadingToast").css("display", "none")
+                    myAlert("当前城市无合作加油站")
+                }
+
+            },
+            error: function (jqXHR) {
+                myAlert("发生错误:" + jqXHR.status)
+            }
+
+        })
+    }
+    
+    function wx_locate_model() {
+        $.getJSON("/Weixin/userinfo/jssdk.do", {url: location.href.split('#')[0]}, function (data) {
+
+            var _appId = data.appId;
+            var _signature = data.signature;
+            var _timestamp = data.timestamp;
+            var _nonceStr = data.noncestr;
+            wx.config({
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: data.appId, // 必填，公众号的唯一标识
+                timestamp: data.timestamp, // 必填，生成签名的时间戳
+                nonceStr: data.noncestr, // 必填，生成签名的随机串
+                signature: data.signature,// 必填，签名，见附录1
+                jsApiList: ['getLocation', 'hideMenuItems', 'hideAllNonBaseMenuItem'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+
+            wx.ready(function () {
+                wx.getLocation({
+                    type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                    success: function (res) {
+                        lat = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                        lng = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+
+                        $("#locate_loading").css("display", "none")
+                        $("#loadingToast").css("display", "block")
+                        $.ajax({
+                            type: "GET",
+                            url: "/Weixin/util/station.do",
+                            data: {lng: lng, lat: lat, openid: openid},
+                            dataType: "json",
+                            success: function (data) {
+                                $("#loadingToast").css("display", "none")
+                                if (data.code == "1") {
+                                    $("#station_show").html(data.list[0].station_name);
+                                    station_id = data.list[0].station_id;
+                                    var distance = data.list[0].min
+                                    if (distance <= 0.25) {
+                                        $(".station_select").unbind()
+                                    }
+                                    if (distance > 0.25) {
+                                        myAlert("微信定位有误，请向加油员核对油站名称")
+                                    }
+                                } else if (data.code == "2") {
+                                    $("#station_show").html("")
+                                    myAlert("一公里内无合作加油站,请点击列表选择油站")
+                                }
+                                else {
+                                    $("#station_show").html("")
+                                    myAlert("当前城市无合作加油站")
+                                }
+                            }
+                        })
+                    }
+                });
+//                wx.hideMenuItems({
+//                    menuList: ['menuItem:openWithSafari', 'menuItem:openWithQQBrowser', 'menuItem:copyUrl', 'menuItem:share:qq', 'menuItem:share:QZone', 'menuItem:share:weiboApp', 'menuItem:share:email', 'menuItem:share:appMessage', 'menuItem:share:timeline', 'menuItem:favorite'] // 要隐藏的菜单项，只能隐藏“传播类”和“保护类”按钮，所有menu项见附录3
+//                });
+                wx.hideAllNonBaseMenuItem();
+            });
+
+        });
+    }
+
+    $(document).ready(function () {
+
+        $("#locate_loading").css("display", "block")
+
+        //cookie中没有油站信息
+        //执行逻辑: 定位 --> 点击下拉列表选择油站
+        //最小油站距离大于0.25时候,判断为定位精度不高,发出一个让用户手动选择的提醒
+        if (user_info == undefined) {
+
+            wx_locate_model()
+
+            $(".station_select").click(function (e) {
+
+                $("#loadingToast").css("display", "block")
+                console.log("click")
+
+                fetch_station_list()
+
+            });
+
+        }
+
+        //cookie中已经有油站信息
+        //执行逻辑 第一次点击下拉列表 进行定位  -->  之后再次点击及第三次点击均展示下拉列表
+        else {
+
+            var flag = true;
+
+            wx_locate_model()
+
+            $(".station_select").click(function () {
+                if (flag) {
+                    //之前逻辑是第一次点击定位,现在逻辑是不再缓存油站,所以每次都要定位
+                    //保留之前代码逻辑
+                    flag = false
+
+                    $("#loadingToast").css("display", "block")
+                    console.log("click")
+
+                    fetch_station_list()
+
+                }
+                else {
+                    $("#loadingToast").css("display", "block")
+                    console.log("click")
+
+                    fetch_station_list()
+
+                }
+
+            })
+        }
+
+
+//        /*昌吉自治州*/
+//        lng = "89.180770";
+//        lat = "44.760552";
+
+//        /*北京*/
+//        lng = "116.373699"
+//        lat = "39.951326"
+
+        /*乌鲁木齐*/
+//        lng = "87.78163"
+//        lat = "44.12681"
+
+
+//        成都市
+//        lng = "104.165735"
+//        lat = "30.459462"
+//
+//        $("#loadingToast").css("display", "none")
+//        $.ajax({
+//            type: "GET",
+//            url: "/Weixin/util/station.do",
+//            dataType: "json",
+//            data: {lng: lng, lat: lat, openid: openid},
+//            success: function (data) {
+//                $("#loadingToast").css("display", "none")
+//                if (data.code == "1") {
+//                    $("#station_show").html(data.list[0].station_name);
+//                    station_id = data.list[0].station_id;
+//                    var distance = data.list[0].min
+//                    if(distance > 0.2) {
+//                        myAlert("定位不准确,请在下拉列表中选择加油站")
+//                    }
+//                }
+//                else {
+//                    $(".station_select").unbind()
+//                    myAlert("一公里内无合作加油站,请点击列表选择油站")
+//                }
+//            }
+//        })
+//
+//        $(".station_select").click(function (e) {
+//
+//            $("#loadingToast").css("display", "block")
+//
+//            $.ajax({
+//                type: "GET",
+//                url: "/Weixin/util/station.do",
+//                dataType: "json",
+//                data: {lng: lng, lat: lat},
+//                success: function (data) {
+//
+//                    if (data.code == "2" || data.code == '1') {
+//                        $("#loadingToast").css("display", "none")
+//
+//                        $("#station_show").html(data.list[0].station_name);
+//                        station_id = data.list[0].station_id;
+//                        $(".station_list").css("display", '');
+//                        $("#list").children("li").remove();
+//                        var station_list = data.list;
+//
+//                        var length = station_list.length > 6 ? 6 : station_list.length;
+//
+//                        for (var i = 1; i < length; i++) {
+//                            $("#list").append("<li>" + station_list[i].station_name + "</li>");
+//                        }
+//
+//                        $("li").click(function (e) {
+//                            console.log($(e.target).html());
+//                            $("#station_show").html($(e.target).html());
+//                            e.stopPropagation();
+//                            for (var i = 0; i < length; i++) {
+//                                if ($(e.target).html() == station_list[i].station_name) {
+//                                    station_id = station_list[i].station_id;
+//                                    console.log(station_id);
+//                                    function shut() {
+//                                        $(".station_list").css("display", 'none');
+//                                    }
+//
+//                                    setTimeout(shut, 100);
+//                                }
+//                            }
+//
+//                        });
+//                        $("#station_show").click(function (e) {
+//                            $(".station_list").css("display", 'none');
+//                            e.stopPropagation();
+//                        });
+//                    } else {
+//                        $("#loadingToast").css("display", "none")
+//                        alert("当前城市无合作加油站")
+//                    }
+//                },
+//                modelMsg: function (jqXHR) {
+//                    alert("发生错误:" + jqXHR.status);
+//                }
+//
+//            })
+//
+//        });
+
+
+        var wait = 60;
+
+        function time() {
+            if (wait == 0) {
+                $(".msg #send").removeAttr("disabled")
+                $(".msg #send").css("background-color", "rgb(4, 190, 1)")
+                $("#send").attr("value", "获取验证码")
+                wait = 60;
+            } else {
+
+                $("#send").attr("disabled", "true")
+                $(".msg #send").css("background-color", "#9C9C9C")
+                $("#send").attr("value", wait + "秒后重新发送")
+                wait--;
+
+                setTimeout(function () {
+                            time()
+                        },
+                        1000)
+            }
+        }
+
+        var authcode;
+
+        $("#send").click(function () {
+
+            var tel = $("#telNum").val();
+            var reg = /^1[3|4|5|7|8][0-9]{9}$/;
+            if (reg.test(tel)) {
+                $.ajax({
+                    type: "GET",
+                    url: "http://nwxoa.u-coupon.cn/Weixin/util/send_auth_code.do",
+                    dataType: "jsonp",
+                    data: {mobile: tel},
+                    jsonp: "callback",
+                    success: function (data) {
+
+                        if (data.code == "1") {
+                            time()
+                            authcode = data.authcode;
+                        } else {
+                            myAlert(data.detail)
+                        }
+                    },
+                    error: function (jqXHR) {
+                        myAlert("发生错误:" + jqXHR.status)
+                    }
+                })
+            } else {
+                $("#telNum").val("");
+                myAlert("手机号填写错误，请重新填写")
+            }
+        })
+
+
+        var URL = "pay.html?tel=TEL&license=LICENSE&amount=AMOUNT&ticket=TICKET&trade_no=TRADENO&id=ID&code=CODE&name=NAME&openid=";
+        $("#btn").click(function () {
+
+            var tel = $("#telNum").val();
+            var code = $("#codeIn").val();
+            var license = $(".license").val();
+            var amount = Math.round(new Number($(".amount").val() * 100)).toFixed(0);
+            var ticket = $('#selected').is(':checked') == true ? 1 : 0;
+
+            console.log(ticket)
+
+            var reg_license = /^[\u4e00-\u9fa5]{1}[A-Z_a-z]{1}[A-Z_a-z_0-9]{5}$/;
+            var reg_tel = /^1[3|4|5|7|8][0-9]{9}$/;
+
+            $("#loadingToast").css("display", "block")
+
+            if (station_id == undefined) {
+                $("#loadingToast").css("display", "none")
+                myAlert("请选择加油站")
+            } else {
+                if (!reg_tel.test(tel)) {
+                    $("#loadingToast").css("display", "none")
+                    $("#telNum").val("")
+                    myAlert("手机号填写错误，请重新填写")
+                } else {
+                    if (code == "") {
+                        $("#loadingToast").css("display", "none")
+                        myAlert("请填写验证码")
+                    }
+                    else {
+                        if (!reg_license.test(license)) {
+                            $("#loadingToast").css("display", "none")
+                            $(".license").val("")
+                            myAlert("请正确填写车牌号")
+                        } else {
+                            if (amount < 100) {
+                                $("#loadingToast").css("display", "none")
+                                $(".amount").val("")
+                                myAlert("消费金额必须大于1元")
+                            } else {
+                                $.ajax({
+                                    type: "GET",
+                                    url: "/Weixin/util/validate_code_new.do",
+                                    dataType: "json",
+                                    data: {mobile: tel, auth_code: code, station: station_id},
+                                    success: function (data) {
+
+                                        $("#loadingToast").css("display", "none")
+
+                                        if (data.code == "1") {
+                                            var tradeNo = data.out_trade_no;
+                                            console.log(tradeNo);
+
+                                            station_name = $("#station_show").html();
+
+                                            URL = URL.replace("TEL", tel)
+                                                    .replace("LICENSE", encodeURI(license))
+                                                    .replace("AMOUNT", amount)
+                                                    .replace("TICKET", ticket)
+                                                    .replace("TRADENO", tradeNo)
+                                                    .replace("ID", station_id)
+                                                    .replace("CODE", code)
+                                                    .replace("NAME", encodeURI(station_name));
+
+                                            URL += openid
+
+                                            window.location.href = URL;
+                                        }
+                                        else {
+                                            $("#codeIn").val("")
+                                            myAlert(data.detail)
+                                        }
+                                    }
+
+                                })
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        });
+
+    });
+</script>
+</html>

@@ -1,0 +1,162 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>case1</title>
+    <meta name="viewport" content=" width=device-width, initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="stylesheet" type="text/css" href="../css/weui.css">
+    <style type="text/css">
+        *{
+            margin:0px;
+            padding:0px;
+        }
+        body{
+            background-color: #ebebeb;
+            font-family:"苹方";
+        }
+        .pic{
+            width:100%;
+            height:190px;
+        }
+        .pic img{
+            width:100%;
+            height:100%;
+        }
+        .station_select{
+            background-color: #fff;
+            height:50px;
+            margin-bottom:13px;
+        }
+        .list{
+            display:inline-block;
+            float:right;
+            margin-top:20px;
+            margin-right: 10px;
+            border:#c9c9c9 solid 2px;
+            border-left:0;
+            border-bottom:0;
+            width:7px;
+            height:7px;
+            -webkit-transform:rotate(135deg);
+            -moz-transform:rotate(135deg);
+            transform:rotate(135deg);
+        }
+        .station_select span{
+            font-size: 16px;
+            color:#222;
+            line-height: 50px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .mini_pic1{
+            margin-left:10px;
+            height:23px;
+            width:22px;
+            float:left;
+        }
+        .mini_pic{
+            margin-left:10px;
+            height:15px;
+            width:13px;
+            float:left;
+            margin-top: 15px;
+        }
+        .msg_input{
+            width:100%;
+            height:410px;
+            background-color: #fff;
+        }
+        .msg{
+            border-bottom:1px solid #ebebeb;
+            height:43px;
+        }
+        .msg input{
+            border:0px;
+            height:43px;
+            font-size:15px;
+            margin-left: 15px;
+            font-weight: 500;
+        }
+        .msg label{
+            display:block;
+            color:#fff;
+            background-color: rgb(152,152,152);
+            float:right;
+            font-size:14px;
+            width:100px;
+            height:32px;
+            line-height: 32px;
+            border-radius: 5px;
+            margin:5px 8px;
+        }
+        label{
+            display:block;
+            color:#fff;
+            background-color: rgb(4,190,1);
+            font-size: 16px;
+            text-align:center;
+            height:40px;
+            border-radius: 5px;
+            line-height: 36px;
+            margin:40px 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="pic">
+    <img src="../image/gasstation.jpg">
+</div>
+<div class="station_select">
+    <img class="mini_pic1" src="../image/home_content_Icon_Gas@2x.png" style="margin-top: 12px;"><span>白家庄加油站</span>
+    <span class="list"></span>
+</div>
+<div class="msg_input">
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_call@2.png">
+        <input type="text" placeholder="请输入手机号">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_input@2x.png">
+        <input type="text" placeholder="请输入验证码">
+        <label>点击发送<input type="button" id="send" style="display:none"></label>
+
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_pic@2x.png">
+        <input type="text" placeholder="车牌号">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_money@2x.png">
+        <input type="text" placeholder="金额">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_voucher@2.png">
+        <input type="text" placeholder="发票">
+    </div>
+    <label>加油支付<input type="button" id="btn" style="display:none"></label>
+</div>
+
+
+
+
+<div id="actionSheet_wrap">
+    <div class="weui_mask_transition" id="mask"></div>
+    <div class="weui_actionsheet" id="weui_actionsheet">
+        <div class="weui_actionsheet_menu">
+            <div class="weui_actionsheet_cell">示例菜单</div>
+            <div class="weui_actionsheet_cell">示例菜单</div>
+            <div class="weui_actionsheet_cell">示例菜单</div>
+            <div class="weui_actionsheet_cell">示例菜单</div>
+        </div>
+        <div class="weui_actionsheet_action">
+            <div class="weui_actionsheet_cell" id="actionsheet_cancel">取消</div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

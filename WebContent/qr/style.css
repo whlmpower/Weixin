@@ -1,0 +1,115 @@
+.green
+{
+	background-color: #32cf57;
+}
+div.logo 
+{
+	width: 4.583rem;
+	margin: 0 auto;
+	margin-top: 1rem;
+	margin-bottom: 1.67rem;
+}
+div.logo img
+{
+	width: 100%;
+}
+div.inputbox
+{
+	margin: 1rem;
+	border: 1px solid #a3a3a3;
+	height: 3.25rem;
+	border-radius: 3px;
+}
+div.inputbox .phone-logo
+{
+	width: auto;
+	padding: 0px 1.167rem;
+	float: left;
+	text-align: center;
+}
+div.inputbox .phone-logo .phone-logo-img
+{
+	width: 1rem;
+	height: 1.458rem;
+	margin-top: 0.9167rem;
+	background:url(img/phone.png) no-repeat;
+	background-size: 100% 100%;
+}
+div.inputbox .phone-input
+{
+	padding: 0.9167rem 0px;
+}
+div.inputbox .input-text
+{
+	height: 1.458rem;
+	line-height: 1.458rem;
+	font-size: 1.167rem;
+	width: 9rem;
+}
+div.inputbox .vertcode-logo
+{
+	width: auto;
+	padding: 0px 1.083rem;
+	float: left;
+	text-align: center;
+}
+div.inputbox .vertcode-logo .vertcode-logo-img
+{
+	width: 1.167rem;
+	height: 1.458rem;
+	margin-top: 0.9167rem;
+	background:url(img/shield.png) no-repeat;
+	background-size: 100% 100%;
+}
+div.inputbox .vertcode-input .input-text
+{
+	padding: 0.9167rem 0px;
+}
+div.inputbox .send-button
+{
+	-webkit-appearance: none;
+	width: 11.333rem;
+	height: 3.333rem;
+	float: right;
+	color: #ffffff;
+	font-size: 1.333rem;
+	line-height: 3.333rem;
+	text-align: center;
+}
+.button
+{
+	color: #ffffff;
+	font-size: 1.333rem;
+	vertical-align: middle;
+}
+div.submit-button
+{
+	margin:0 auto;
+	margin-top: 1.333rem;
+	margin-left: 1rem;
+	margin-right: 1rem;
+	font-size: 1.333rem;
+	color: #ffffff;
+	border-radius: 4px;
+	text-align: center;
+	height: 3.333rem;
+	line-height: 3.333rem;
+}
+div.information
+{
+	
+	margin: 0px 1rem;
+	font-size: 1.167rem;
+	color: #909090;
+}
+div.information h3
+{
+	color: #333333;
+	font-size: 1.333rem;
+	margin: 2.333rem 0;
+}
+div.information p
+{
+	margin-bottom: 2.333rem;
+	line-height: 1.7em;
+}

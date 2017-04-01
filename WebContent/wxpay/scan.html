@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>优加油</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no"/>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="../jquery-2.2.1.min.js"></script>
+    <script src="../jquery.cookie.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/weui.css">
+    <script type="text/javascript"
+            src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+</head>
+<script>
+    //清除cookie
+    $.removeCookie("selected")
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]);
+        return null;
+    }
+</script>
+<script>
+
+    var code = getQueryString("code")
+    var state = getQueryString("state")
+    var openid = $.cookie("openid")
+    var station_id = getQueryString("id")
+    console.log(state,station_id)
+    if (openid == undefined) {
+        if (code != "null") {
+            var url = "/Weixin/userinfo/getopenid.do";
+            $.getJSON(url, {"code": code, "state": state}, function (data) {
+                openid = data.openid;
+                $.cookie("openid", openid)
+            });
+        }
+    }
+</script>
+<style type="text/css">
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    body {
+        background-color: #ebebeb;
+        font-family: "苹方";
+        height: 600px;
+        overflow: hidden;
+    }
+
+    html {
+    }
+
+    .pic {
+        width: 100%;
+    }
+
+    .pic img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .station_select {
+        background-color: #fff;
+        height: 50px;
+        margin-bottom: 6px;
+        position: relative;
+        margin-top: -6px;
+    }
+
+    .arrow {
+        display: inline-block;
+        float: right;
+        margin-top: 20px;
+        margin-right: 10px;
+        border: #c9c9c9 solid 2px;
+        border-left: 0;
+        border-bottom: 0;
+        width: 7px;
+        height: 7px;
+        -webkit-transform: rotate(135deg);
+        -moz-transform: rotate(135deg);
+        transform: rotate(135deg);
+    }
+
+    .station_select span {
+        font-size: 16px;
+        color: #222;
+        line-height: 50px;
+        margin-left: 10px;
+        font-weight: bold;
+    }
+
+    .mini_pic {
+        margin-left: 10px;
+        height: 15px;
+        width: 13px;
+        float: left;
+        margin-top: 15px;
+    }
+
+    .mini_pic1 {
+        margin-left: 10px;
+        height: 23px;
+        width: 22px;
+        float: left;
+    }
+
+    .mini_pic2 {
+        height: 15px;
+        width: 13px;
+        float: left;
+        margin-left: -5px;
+    }
+
+    .msg_input {
+        width: 100%;
+        height: 375px;
+        background-color: #fff;
+        overflow: hidden;
+    }
+
+    .msg {
+        border-bottom: 1px solid #ebebeb;
+        height: 43px;
+    }
+
+    .msg input {
+        border: 0px;
+        height: 43px;
+        font-size: 15px;
+        margin-left: 15px;
+        font-weight: 500;
+        width: 50%;
+    }
+
+    #ticket_title {
+        font-size: 15px;
+        font-weight: 500;
+        margin-left: 15px;
+    }
+
+    .msg #send {
+        -webkit-appearance: none;
+        border-style: none;
+        outline: none;
+        width: 20%;
+        float: right;
+        margin-right: 20px;
+        color: #fff;
+        background-color: rgb(4, 190, 1);
+        float: right;
+        font-size: 14px;
+        width: 30%;
+        height: 32px;
+        line-height: 32px;
+        border-radius: 5px;
+        margin: 5px 8px;
+    }
+
+    label {
+        display: block;
+        color: #fff;
+        background-color: rgb(4, 190, 1);
+        font-size: 16px;
+        text-align: center;
+        height: 40px;
+        border-radius: 5px;
+        line-height: 36px;
+        margin: 40px 20px;
+    }
+
+    .station_list {
+        position: absolute;
+        width: 85%;
+        background-color: #ddd;
+        top: 37px;
+        left: 40px;
+    }
+
+    #list {
+        list-style: none;
+    }
+
+    #list li {
+        font-size: 15px;
+        font-weight: bold;
+        height: 28px;
+        line-height: 28px;
+    }
+
+    .msg .ticket {
+        color: black;
+        background-color: white;
+    }
+
+    #ticket_div {
+        margin-top: -1px;
+    }
+
+    .locate {
+        display: inline-block;
+        float: right;
+        margin-top: 20px;
+        margin-right: 10px;
+    }
+</style>
+</head>
+<div class="pic">
+    <img src="../image/station.png">
+</div>
+
+<div class="station_select">
+    <img class="mini_pic1" src="../image/home_content_Icon_Gas@2x.png" style="margin-top: 12px;">
+    <span id="station_show"></span>
+</div>
+
+<div class="msg_input">
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_call@2.png">
+        <input type="tel" placeholder="请输入手机号" id="telNum">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_input@2x.png">
+        <input type="tel" placeholder="请输入验证码" id="codeIn">
+        <input type="button" id="send" style="" value="获取验证码">
+
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_pic@2x.png">
+        <input type="text" class="license" placeholder="车牌号">
+    </div>
+    <div class="msg">
+        <img class="mini_pic" src="../image/home_content_Icon_money@2x.png">
+        <input type="number" class="amount" placeholder="金额">
+    </div>
+    <div class="weui_cells weui_cells_form" id="ticket_div">
+        <div class="weui_cell weui_cell_switch">
+            <img class="mini_pic2" src="../image/home_content_Icon_voucher@2.png">
+            <div class="weui_cell_hd weui_cell_primary" id="ticket_title">发票</div>
+            <div class="weui_cell_ft">
+                <input class="weui_switch js_switcher" id="selected" type="checkbox">
+            </div>
+        </div>
+    </div>
+
+    <label for="btn">继续</label>
+    <input type="button" id="btn" style="display:none;">
+</div>
+
+<div id="loadingToast" class="weui_loading_toast" style="display: none">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">数据加载中</p>
+    </div>
+</div>
+
+<div id="locate_loading" class="weui_loading_toast" style="display: none">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">定位中</p>
+    </div>
+</div>
+
+<div id="alert_info" class="weui_dialog_alert" style="display: none">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">温馨提示</strong></div>
+        <div class="weui_dialog_bd">弹窗内容，告知当前页面信息等</div>
+        <div class="weui_dialog_ft">
+            <a href="javascript:;" onclick="$('#alert_info').css('display', 'none')"
+               class="weui_btn_dialog primary">确定</a>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script>
+    function myAlert(info) {
+        $(".weui_dialog_bd").html(info)
+        $("#alert_info").css("display", "")
+    }
+</script>
+<script>
+
+    var user_info = $.cookie("user_info")
+    var station_name
+    var tel
+    var license
+    if (user_info != undefined) {
+        var json = JSON.parse(user_info)
+        tel = json.tel
+        license = json.license
+        $("#telNum").val(tel)
+        $(".license").val(license)
+
+    }
+    $("#loadingToast").css("display", "block")
+    $.getJSON("/Weixin/util/query_station_name_php.do", {station_id:station_id}, function (data) {
+        code = data.code;
+        if(code == "1"){
+            station_name = data.stationname
+            $("#station_show").html(station_name)
+            $("#loadingToast").css("display", "none")
+        }
+        else{
+            myAlert("加油站暂停使用")
+            $("#loadingToast").css("display", "none")
+        }
+    })
+
+
+    $(document).ready(function () {
+
+        var wait = 60;
+
+        function time() {
+            if (wait == 0) {
+                $(".msg #send").removeAttr("disabled")
+                $(".msg #send").css("background-color", "rgb(4, 190, 1)")
+                $("#send").attr("value", "获取验证码")
+                wait = 60;
+            } else {
+
+                $("#send").attr("disabled", "true")
+                $(".msg #send").css("background-color", "#9C9C9C")
+                $("#send").attr("value", wait + "秒后重新发送")
+                wait--;
+
+                setTimeout(function () {
+                            time()
+                        },
+                        1000)
+            }
+        }
+
+        var authcode;
+
+
+        $("#send").click(function () {
+
+            var tel = $("#telNum").val();
+            var reg = /^1[3|4|5|7|8][0-9]{9}$/;
+            if (reg.test(tel)) {
+                $.ajax({
+                    type: "GET",
+                    url: "http://wxoa.u-coupon.cn/Weixin/util/send_auth_code.do",
+                    dataType: "jsonp",
+                    data: {mobile: tel},
+                    jsonp: "callback",
+                    success: function (data) {
+
+                        if (data.code == "1") {
+                            time()
+                            authcode = data.authcode;
+                        } else {
+                            myAlert(data.detail)
+                        }
+                    },
+                    error: function (jqXHR) {
+                        myAlert("发生错误:" + jqXHR.status)
+                    }
+                })
+            } else {
+                $("#telNum").val("");
+                myAlert("手机号填写错误，请重新填写")
+            }
+        })
+
+
+        var URL = "pay.html?tel=TEL&license=LICENSE&amount=AMOUNT&ticket=TICKET&trade_no=TRADENO&id=ID&code=CODE&name=NAME&openid=";
+        $("#btn").click(function () {
+
+            var tel = $("#telNum").val();
+            var code = $("#codeIn").val();
+            var license = $(".license").val();
+            var amount = Math.round(new Number($(".amount").val() * 100)).toFixed(0);
+            var ticket = $('#selected').is(':checked') == true ? 1 : 0;
+
+            console.log(ticket)
+
+            var reg_license = /^[\u4e00-\u9fa5]{1}[A-Z_a-z]{1}[A-Z_a-z_0-9]{5}$/;
+            var reg_tel = /^1[3|4|5|7|8][0-9]{9}$/;
+
+            $("#loadingToast").css("display", "block")
+
+            if (station_id == undefined) {
+                $("#loadingToast").css("display", "none")
+                myAlert("请选择加油站")
+            } else {
+                if (!reg_tel.test(tel)) {
+                    $("#loadingToast").css("display", "none")
+                    $("#telNum").val("")
+                    myAlert("手机号填写错误，请重新填写")
+                } else {
+                    if (code == "") {
+                        $("#loadingToast").css("display", "none")
+                        myAlert("请填写验证码")
+                    }
+                    else {
+                        if (!reg_license.test(license)) {
+                            $("#loadingToast").css("display", "none")
+                            $(".license").val("")
+                            myAlert("请正确填写车牌号")
+                        } else {
+                            if (amount < 100) {
+                                $("#loadingToast").css("display", "none")
+                                $(".amount").val("")
+                                myAlert("消费金额必须大于1元")
+                            } else {
+                                $.ajax({
+                                    type: "GET",
+                                    url: "/Weixin/util/validate_code_new.do",
+                                    dataType: "json",
+                                    data: {mobile: tel, auth_code: code, station: station_id},
+                                    success: function (data) {
+
+                                        $("#loadingToast").css("display", "none")
+
+                                        if (data.code == "1") {
+                                            var tradeNo = data.out_trade_no;
+                                            console.log(tradeNo);
+
+                                            station_name = $("#station_show").html();
+
+                                            URL = URL.replace("TEL", tel)
+                                                    .replace("LICENSE", encodeURI(license))
+                                                    .replace("AMOUNT", amount)
+                                                    .replace("TICKET", ticket)
+                                                    .replace("TRADENO", tradeNo)
+                                                    .replace("ID", station_id)
+                                                    .replace("CODE", code)
+                                                    .replace("NAME", encodeURI(station_name));
+
+                                            URL += openid
+
+                                            window.location.href = URL;
+                                        }
+                                        else {
+                                            $("#codeIn").val("")
+                                            myAlert(data.detail)
+                                        }
+                                    }
+
+                                })
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        });
+
+    });
+</script>
+</html>

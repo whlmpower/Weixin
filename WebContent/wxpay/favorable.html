@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport"
+          content=" width=device-width, initial-scale=1, user-scalable=no"
+          charset="utf-8">
+    <script src="../jquery-2.2.1.min.js"></script>
+    <script src="../handlebars-v4.0.5.js"></script>
+    <script src="../jquery.cookie.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/weui.css">
+    <title>优加油</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            background-color: #ebebeb;
+            font-family: "苹方";
+        }
+        .weui_btn_area{
+            margin-bottom: 40px;
+        }
+        .expire_time{
+            color: #9C9C9C;
+            font-weight: 100;
+            font-size: 13px;
+            position: absolute;
+            left: 30%;
+            top:34%;
+        }
+        .coupon_price{
+            margin-left: 3px;
+            font-size: 13px;
+            color: #04BE02;
+        }
+        .price_0{
+            font-size: 18px;
+            color: #04BE02;
+        }
+        .pic{
+            position: absolute;
+            right: -19px;
+            bottom: -2px;
+        }
+        img{
+            height: 85%;
+            width: 85%
+        }
+
+    </style>
+</head>
+
+<script id="favorable_view_handle" type="text/x-handlebars-template">
+    <label class="weui_cell weui_check_label">
+        <div class="weui_cell_hd">
+            <input id = "coupon_data" type="checkbox" value={{id}} class="weui_check" name="favorable">
+            <i class="weui_icon_checked"></i>
+        </div>
+        <div class="weui_cell_bd weui_cell_primary">
+            <p class="coupon_price">&yen; <span class="price_0">{{price_0}}</span>.{{price_1}}<span class="expire_time" >有效期: {{expire_time}}</span><span class="pic"><img src={{type_url}}></span></p>
+        </div>
+    </label>
+</script>
+
+<script>
+    function myAlert(info) {
+        $(".weui_dialog_bd").html(info)
+        $("#alert_info").css("display", "")
+    }
+</script>
+<script>
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]);
+        return null;
+    }
+</script>
+
+<body>
+<div id="alert_info" class="weui_dialog_alert" style="display: none">
+    <div class="weui_mask"></div>
+    <div class="weui_dialog">
+        <div class="weui_dialog_hd"><strong class="weui_dialog_title">温馨提示</strong></div>
+        <div class="weui_dialog_bd">弹窗内容，告知当前页面信息等</div>
+        <div class="weui_dialog_ft">
+            <a href="javascript:;" onclick="$('#alert_info').css('display', 'none')"
+               class="weui_btn_dialog primary">确定</a>
+        </div>
+    </div>
+</div>
+
+<form class="favorable_form">
+<div class="weui_cells_title">优惠券列表</div>
+    <div class="weui_cells weui_cells_checkbox" id="favorable_view">
+    </div>
+</form>
+
+<div class="weui_cells weui_cells_form">
+    <div class="weui_cell weui_cell_switch">
+        <div class="weui_cell_hd weui_cell_primary">全选</div>
+        <div class="weui_cell_ft">
+            <input class="weui_switch" id="checkAll" name="isMarry" value="true" type="checkbox">
+        </div>
+    </div>
+</div>
+
+<div class="weui_btn_area" id="selected">
+    <a href="javascript:;" id="_pay_btn" class="weui_btn weui_btn_primary">确认</a>
+</div>
+<div id="loadingToast" class="weui_loading_toast">
+    <div class="weui_mask_transparent"></div>
+    <div class="weui_toast">
+        <div class="weui_loading">
+            <!-- :) -->
+            <div class="weui_loading_leaf weui_loading_leaf_0"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_1"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_2"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_3"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_4"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_5"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_6"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_7"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_8"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_9"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_10"></div>
+            <div class="weui_loading_leaf weui_loading_leaf_11"></div>
+        </div>
+        <p class="weui_toast_content">加载中</p>
+    </div>
+</div>
+</body>
+</html>
+<script>
+
+    $.removeCookie("selected")
+
+    var url = "/Weixin/util/discount_coupon.do"
+    var mobile = getQueryString("mobile") == null ? "13051877272" : getQueryString("mobile")
+    //存储用户优惠券信息
+    var coupon_data = []
+
+    $.getJSON(url, {mobile: mobile}, function (data) {
+        $("#loadingToast").css("display", "none")
+        var code = data.code
+        if (code == 1) {
+            var list = data.list
+            var favorable_html = ""
+
+            $.each(list, function (index, item) {
+
+                var id = item.id
+                var price = item.price
+                var type = item.type
+                var addtime = item.addtime
+                var expire_time = item.deltime
+
+                var data = new Object();
+                data.id = id
+                data.price_0 = new Number(price).toFixed(2).split(".")[0]
+                data.price_1 = new Number(price).toFixed(2).split(".")[1]
+                data.expire_time = expire_time.split(" ")[0]
+
+                var type_url = ""
+                switch (type){
+                    case "2":
+                        type_url = "../image/type2.png"
+                        break
+                    case "3":
+                        type_url = "../image/type3.png"
+                        break
+                    case "4":
+                        type_url = "../image/type4.png"
+                        break
+                    case "6":
+                        type_url = "../image/type6.png"
+                        break
+                }
+                data.type_url = type_url
+
+                coupon_data.push([id, price, type, addtime, expire_time])
+
+                var handle = $("#favorable_view_handle").html()
+                var template = Handlebars.compile(handle)
+                var html = template(data)
+                favorable_html += html
+            })
+            $("#favorable_view").html(favorable_html)
+    }else {
+            myAlert("无可用优惠券,请返回")
+        }
+
+    })
+
+    console.log(coupon_data)
+
+</script>
+
+<script>
+
+    $("#checkAll").on("click", function () {
+        if (this.checked) {
+            $('input[name="favorable"]').prop("checked", true)
+        }
+        else {
+            $('input[name="favorable"]').prop("checked", false)
+        }
+    })
+
+    $("#selected").click(function () {
+
+        var data = $(".favorable_form").serializeArray()
+        console.log("优惠券信息" + coupon_data)
+        console.log("选择优惠券" + data)
+        var coupon_selected = new Object()
+        var coupon_list = []    //使用优惠券列表
+        var copmy_use = new Number(0)   //使用优惠券总金额
+        var copmynum_use = 0    //优惠券使用量
+
+        $.each(data, function (index, item) {
+            coupon_list.push(item.value)
+        })
+
+        $.each(coupon_list, function (i, item) {
+            $.each(coupon_data, function(j, save){
+                if(item == save[0]){
+                    copmy_use += new Number(save[1])
+                }
+            })
+        })
+
+        copmynum_use = coupon_list.length
+        copmy_use = copmy_use.toFixed(2)
+        coupon_selected.copmynum_use = copmynum_use
+        coupon_selected.copmy_use = copmy_use
+        coupon_selected.coupon_list = coupon_list
+
+        console.log(coupon_selected)
+
+        if(copmynum_use == 0){
+            $.removeCookie("selected")
+        }
+        else {
+            $.cookie("selected", JSON.stringify(coupon_selected))
+        }
+        $("#loadingToast").css("display", "block")
+        setTimeout("window.location.href = \"javascript:history.go(-1)\"", 300);
+
+    })
+
+</script>

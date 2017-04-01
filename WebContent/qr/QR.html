@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>优加油</title>
+    <script src="../jquery-2.2.1.min.js"></script>
+</head>
+<body>
+
+<div>
+    <label>请输出场景id </label>
+    <input class="scene_id" type="text">
+    <input class="submit" type="button" value="提交">
+</div>
+<p class="tip"></p>
+<img class="qr_img" src="">
+</body>
+<script>
+    $(".submit").click(function () {
+        $(".qr_img").attr("src", "")
+        var scene_id = $(".scene_id").val()
+        if (isNaN(new Number(scene_id))) {
+            alert("请输入数字")
+            return
+        }
+        if (new Number(scene_id) < 0 || scene_id > 100000) {
+            alert("id范围在0至100000")
+            $(".scene_id").attr("value", "")
+            return
+        }
+        $(".tip").html("加载中")
+        var url = "/Weixin/qr/"
+        url = url + scene_id + ".do"
+        $.getJSON(url, function (data) {
+            var img_url = data.url
+            $(".qr_img").attr("src", img_url)
+            $(".tip").html("")
+        })
+    })
+
+</script>
+</html>

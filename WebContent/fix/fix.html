@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no"/>
+    <meta http-equiv="refresh" content="3;url=http://www.u-coupon.cn/mobile/download.html">
+    <title>优加油</title>
+    <script type="text/javascript" src="../jquery-2.2.1.min.js"></script>
+</head>
+<style>
+    div{
+        text-align: center;
+    }
+    .content{
+        position: relative;
+        font-size: 21px;
+        top: 40px;
+        font-weight: 500;
+    }
+    .count{
+        font-size: 23px;
+        color: red;
+    }
+</style>
+
+<body>
+    <div class="content">
+        <p>"一键加油"功能正在维护中</p>
+        <p>请下载使用优加油APP</p>
+        <p><span class="count"\>3</span>秒钟后自动跳转</p>
+    </div>
+
+</body>
+<script>
+
+
+    var wait = 3;
+    function time() {
+        if (wait == 0) {
+            wait = 3;
+        } else {
+            $(".count").html(wait)
+            wait--;
+            setTimeout(function () {
+                        time()
+                    },
+                    1000)
+        }
+    }
+    time()
+</script>
+</html>

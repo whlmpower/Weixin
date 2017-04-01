@@ -1,0 +1,9 @@
+<ehcache>
+    <cache name="orderData"
+           maxElementsInMemory="500"
+           maxEntriesLocalHeap="500"
+           eternal="false"
+           timeToLiveSeconds="6000"
+           memoryStoreEvictionPolicy="LRU">
+    </cache>
+</ehcache>
